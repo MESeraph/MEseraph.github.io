@@ -1,0 +1,133 @@
+文|Seraph
+### 01 | 问题
+给出两个非空的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
+如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
+您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+示例：
+>输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
+>输出：7 -> 0 -> 8
+>原因：342 + 465 = 807
+
+
+### 02 |解题
+#### 初解：
+本以为此题蛮简单的，无非从前往后检索两个链表，做进位加法。可是写的过程中发现好多需要处理的细节，几乎是提交了10次才过，如下为初解代码：
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        bool bIsCarry=false;
+        ListNode *pResult=l1;
+        ListNode *pListNode;
+        //首次循环相加
+        do{
+            pListNode = l1;
+            int sum = l1->val + l2->val;
+            if(bIsCarry)
+            {
+                sum++;
+            }
+            if(sum >= 10)
+            {
+                bIsCarry=true;
+            }
+            else
+            {
+                bIsCarry=false;
+            }
+            l1->val = sum%10;
+            l1=l1->next;
+            l2=l2->next;
+        }while(l1!=NULL && l2!=NULL);
+        
+        //处理长度不一的高位链表
+        ListNode *preListNode=pListNode;
+        if(!l1)
+        {
+            pListNode->next = l2;
+        }
+        pListNode=pListNode->next;
+        while(bIsCarry)
+        {
+            if(!pListNode)
+            {
+                ListNode *pEndListNode = new ListNode(1);
+                preListNode->next = pEndListNode;
+                break;
+            }
+            else
+            {
+                preListNode = pListNode;
+            }
+            int sum = pListNode->val + 1;
+             if(sum >= 10)
+            {
+                bIsCarry=true;
+            }
+            else
+            {
+                bIsCarry=false;
+            }
+            pListNode->val = sum%10;
+            pListNode=pListNode->next;
+        }
+        return pResult;
+    }
+};
+```
+如上代码，不申请额外控件，直接修改`l1`链表并输出结果。
+处理过程先用一个循环处理两个链表都有值得的情况，再处理更长的链表，由于及时进位为1，当所有位都为9时，也可能都发生进位，所以任然需要循环处理，直到没有进位。
+再者需要注意的是，因为循环判断依据是下个节点为空，所以如果出了循环还需要进一步处理，需要在循环内部记住出循环时，前一个节点。否则使用NULL节点做不了任何操作。
+#### 终解：
+初解的方法主要分两步，步骤较清晰。但是代码过于冗长。其实我们可以在一个循环里面处理完所有的数据，只要在循环内增加判断`l1`和`l2`为空的情况判断，如下代码：
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode *result = new ListNode(0);//定义链表时，直接初始化一个值，在后面不用再分类判断链表是否为空，再返回时直接返回result.next即可
+        ListNode *curr = result;
+        int carry = 0;
+        int sum;
+        while(l1 != NULL || l2 != NULL){//不需要分类判断，只要一个链表还有值就继续循环，空的加0代替
+            int x = (l1 != NULL) ? l1->val : 0;
+            int y = (l2 != NULL) ? l2->val : 0;
+            sum = x + y + carry;
+            int val = sum % 10;
+            carry = sum / 10;
+            ListNode *newNode = new ListNode(val);
+            curr->next = newNode;
+            curr = curr->next;
+            if(l1 != NULL)//如果为空，则不再往下遍历
+                l1 = l1->next;
+            if(l2 != NULL)
+                l2 = l2->next;
+        }
+        if(carry != 0){//注意最后可能还要加进位
+            ListNode *tmp = new ListNode(carry);
+            curr->next = tmp;
+        }
+        return result->next;
+    }
+};
+```
+同时，如没有要求，尽量不要改动输入参数的值。如上代码都是自己新建链表节点，最终返回结果。
+### 03 | 积累知识点
+1. 链表操作需要细心，看似简单，但是很多细节容易错。
+2. 尽量不修改输入参数。
