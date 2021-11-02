@@ -1,4 +1,4 @@
-title: Leetcode Answer
+title: liushupeng Blog
 author: liushupeng
 email: 13070195207@163.com
 description: > # this means to ignore newlines until "show_exerpts:"
@@ -15,8 +15,8 @@ sass:
 
 permalink: /posts/:title/
 texture:
-  title: LeetCode Answer
-  tagline: Developer. liushupeng
+  title: LiuShupeng Blog
+  tagline: 喜欢就争取，得到就珍惜，失去就忘记
   date_format: "%b %-d, %Y"
   style: black
   showNav: false
@@ -26,9 +26,9 @@ texture:
   social_links:
     twitter: seraph1990
     github:  seraph1990
-    linkedIn: in/liushupeng
+    linkedIn: in/树鹏-刘-06b291137
     rss: rss
-
+ 
 
 # If you want to link only specific pages in your header, uncomment
 # this and add the path to the pages in order as they should show up
